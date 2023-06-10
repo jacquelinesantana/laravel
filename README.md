@@ -677,3 +677,50 @@ public function up(): void
 
 O código acima já indica que essa tabela criada vai ter um campo de ID, vamos incluir então os demais campos/ atributos:
 
+```
+$table->string('nome', 128);
+```
+
+Após incluir os campos necessários, acima incluimos o campo nome com tamanho 128 caracteres e formato string, vamos executar o comando para essa estrutura ser adicionada no seu SQLite:
+
+```
+$ php artisan migrate
+```
+
+ao executar o comando vamos ter o seguinte resultado: no arquivo database.sqlite vai ser adicionado todos os SQL para criar as tabelas necessárias para o sistema e incluindo a tabela series com o campo nome e id, resultado do arquivo migrate que criamos:
+
+```
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+return new class extends Migration
+{
+
+  /**
+   \* Run the migrations.
+   */
+
+  public function up(): void
+  {
+    Schema::create('series', function (Blueprint $table) {
+      $table->id();
+      $table->timestamps();
+      $table->string('nome', 128);
+    });
+  }
+
+  /**
+   \* Reverse the migrations.
+   */
+
+  public function down(): void
+  {
+    Schema::dropIfExists('series');
+  }
+};
+```
+
+#### Persistir dados do formulário para o banco de dados 
+
