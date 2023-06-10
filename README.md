@@ -628,3 +628,52 @@ mix
 ```
 
 > Nas linha acima estamos indicando o caminho do nosso arquivo css e onde ele será replicado, no caso na public/css, o mesmo para o javascript que vem da resources/js/app.js e será replicado para o public/js
+
+## Configurações do projeto Laravel
+
+No diretório Config do projeto podemos ver vários arquivos de configuração do projeto, mas o arquivo app.php esta recheado com as configurações do projeto, incluindo a informação de versão do projeto, se o mesmo esta em fase de desenvolvimento ou em produção. Autenticação também esta nesse arquivo.
+
+Vamos então, no arquivo **database.php**, nele vamos  utilizar SQLite, para isso então vamos seguir os seguintes passos: para a linha 41 do código, temos que o arquivo com dados de conexão com o novo banco de dados fica em um arquivo chamado: **database.sqlite** então vamos criar o mesmo dentro do diretório database.
+
+> OBS as alterações a seguir de mysql para sqlite é para o caso de desejar usar o banco de dados sqlite, mas poderia dar sequencia no projeto utilizando o MYSQL mesmo normalmente.
+
+Vamos tomar o devido cuidado para não informar dados seguros do banco de dados para esse arquivo, vamos fazer isso via Variáveis de Ambiente** no arquivo .env, este não será enviado para o seu versionador/Github, vamos alterar a linha 11 do arquivo .env e mudar onde esta `DB_CONNECTION=mysql` para `DB_CONNECTION=sqlite`. Vamos também **remover** o trecho a seguir desse arquivo:
+
+```
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=laravel
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+Agora vamos utilizar o Laravel para criar a estrutura do banco de dados.
+
+### Criando estrutura do banco de dados
+
+Quando falamos de banco de dados em um projeto Laravel, o mesmo possui alguns recursos para facilitar a vida da pessoa desenvolvedora, entre eles: no diretório **database/seeders** - podemos criar alguns dados para teste da sua aplicação, exemplo usuario padrão com permissões no sistema. Em **database/factories** - podemos criar dados falsos para teste apenas. 
+
+Já em **database/migrations** conseguimos criar versões do banco de dados que real da aplicação, com as estruturas das tabelas e tudo que for necessário para o funcionamento do sistema. Ele é basicamente um versionamento do seu banco de dados.
+
+Para criar nosso arquivo Migrations para o sistema de controle de series, vamos no terminal executar o seguinte comando:
+
+```
+$ php artisan make:migration create_series_table
+```
+
+A linha de comando acima indica que o php artisan vai gerar o arquivo do tipo migration com nome create_series_table
+
+Teremos para esse arquivo a seguinte estrutura de código:
+
+```
+public function up(): void
+{
+    Schema::create('series', function (Blueprint $table) {
+      $table->id();
+      $table->timestamps();
+    });
+}
+```
+
+O código acima já indica que essa tabela criada vai ter um campo de ID, vamos incluir então os demais campos/ atributos:
+
