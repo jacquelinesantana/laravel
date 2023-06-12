@@ -23,5 +23,5 @@ Route::get('/oi', function () {
 
 Route::get('/serie', [SeriesController::class, 'index']);
 Route::get('/serie/criar', [SeriesController::class, 'create']);
-Route::post("/series/salvar", [SeriesController::class, 'store']);
+Route::post("/serie/salvar", [SeriesController::class, 'store']);
 

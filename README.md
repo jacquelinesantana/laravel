@@ -731,6 +731,7 @@ arquivo create.blade.php
 ```
 <x-layout title="Nova série">
   <form action="/serie/salvar" method="post">
+  @csrf
     <label for="nome"> Nome: </label>
     <input type="text" id="nome" name="nome">
     <button type="submit"> Enviar </button>
@@ -739,6 +740,8 @@ arquivo create.blade.php
 ```
 
 Após essa alteração é necessário criar a rota no arquivo `routers/web.php`, basta adicionar a linha abaixo nesse arquivo.
+
+note que agora dentro das tags do form, temos uma linha com a anotação @csrf que indica ao nosso servidor que somos nós e não outro site que estamos enviando essa requisição, garantindo um pouco mais de segurança para nossa ação.
 
 ```
 Route::post("/series/salvar", [SeriesController::class, 'store']);
@@ -762,4 +765,109 @@ public function store (Request $resquest)
 	}
 }
 ```
+
+Atenção: verifique se no seu código do arquivo SerieController, possui a biblioteca incluídas nas primeiras linhas:
+
+```
+use Illuminate\Support\Facades\DB;
+```
+
+Esta garante o funcionamento da conexão e funcionamento das ações que requerem ação com o banco de dados
+
+#### Retornando os dados do bando de dados na tela exibir séries:
+
+Para isso vamos voltar na classe `http/controllers/SerieController` e alterar a parte do código que estamos criando um array com as séries, esse trecho do código deve ser substituído pelo trecho a seguir:
+
+```
+$series = DB::select('SELECT nome FROM series;'); 
+dd($series); //Faz a mesma ação do VarDump exibe o conteúdo do array que vem do banco 
+```
+
+Na primeira linha estamos fazendo a consulta no banco de dados e jogando dentro do variável $series, na segunda linha estamos usando comando dd que faz um echo dos dados encontrados no banco e passados para a $series. 
+
+Abaixo temos o resultado esperado, como podemos ver o dd esta sendo usado aqui apenas para conferir se os dados estão até o momento chegando na variável conforme o esperado. Podemos comentar essa linha a seguir, após esse teste.
+
+![image-20230612002714034](C:\Users\tijac\AppData\Roaming\Typora\typora-user-images\image-20230612002714034.png)
+
+Removido essa linha do dd da sua controller, precisamos agora ajudar a Classe resources/views/series/index.blade.php onde passamos a Serie, o código ficará então:
+
+```
+<x-layout title="Séries">
+    <a href="/serie/criar" class="btn btn-warning">Cadastrar nova série</a>
+  <ul>
+     @foreach ($series as $serie)
+     <li class="list-group-item"> {{$serie -> nome}} </li>
+     @endforeach
+  </ul>
+</x-layout>
+```
+
+Essa alteração é porque nesse momento o Serie se torna um objeto que passa o atributo nome.
+
+> OBS: caso não seja feito o comentário na linha dd($series) da sua controller, você ficará preso na visualização dos dados conforme a imagem acima e não no formato de dela que definimos anteriormente no front, então confirme se essa linha foi de fato comentada caso não consiga voltar a forma de exibição de dados do seu front end.
+
+> OBS2: O Laravel possui uma proteção contra um ataque chamado *Cross-Site Request Forgery* (CSRF). Todo formulário que nós enviamos para o Laravel precisa ter uma informação extra: um token. Esse token permite que o Laravel verifique  que a requisição realmente foi enviada por um formulário do site.
+>
+> Felizmente essa informação é simples de se adicionar, bastando usar a diretiva `@csrf` do blade. :-D
+
+### Re-fatorando o código para não escrever SQL no Controller
+
+Para melhor aproveitar os recursos do Laravel, vai ser feito agora o refatoração do código de modo a minimizar o uso de escrita do SQL para as ações com banco de dados.
+
+Primeiro vamos criar uma model, com os atributos do banco de dados para a série, para isso no terminal usaremos o comando:
+
+```
+php artisan make:model Serie
+```
+
+Acima utilizamos o comando php artisan para fazer uma classe model com nome Serie. Essa classe terá o formato abaixo:
+
+```
+<?php
+namespace App\Models;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Serie extends Model
+{
+  use HasFactory;
+}
+```
+
+Agora vamos atualizar a consulta do banco para trazer todas as séries registradas e o método ficará da seguinte forma(arquivo SeriesController):
+
+```
+  public function index(Request $request){
+	$series = Serie::all();
+	return view('series.index') -> with ('series', $series);
+  }
+```
+
+A partir dessa alteração vamos receber uma colection com os dados da série e vamos ter o nosso front funcionando sem precisar de alterações.
+
+Já para o método Store que grava os dados no bando de dados, após a refatoração ficará:
+
+```
+public function store(Request $request)
+  {
+    $nomeSerie = $request->input("nome");
+    $serie = new Serie();
+    $serie-> nome = $nomeSerie;
+    $serie->save();
+    return redirect('/serie');
+  }
+```
+
+A primeira linha dentro do método esta recebendo o valor do input com name=nome, a segunda esta criando um objeto para o model Serie, depois passamos o parâmetro nome sendo igual o valor do input com name = nome. A seguir a gente  chama o método Save para gravar os dados do objeto e retornamos o redirecionamento da página para o usuário.
+
+Ainda falando dos métodos que temos já criados, para o index, podemos passar outros critérios para essa consulta no banco, por exemplo ordenar os dados por ordem alfabética crescente, no atributo nome. Ficaria assim a linha:
+
+```
+public function index(Request $request){
+	$series = Serie::query()->orderBy('nome', 'desc')->get();
+	return view('series.index') -> with ('series', $series);
+}
+```
+
+então vimos que substituiu o all(), por query. Isso porque o método query é mais amplo e nos permite usar alguns recursos a mais como o orderBy, por exemplo, que faz a ordenação do retorno da busca ao banco por um atributo em específico, no caso o nome. O desc pode ser substituído por asc e indica se a ordem dessa ordenação será crescente ou decrescente.
 
