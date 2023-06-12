@@ -1,7 +1,7 @@
 <x-layout title="Nova série">
-    <form action="/serie/salvar" method="post">
+    <form >
         <label for="nome"> Nome: </label>
         <input type="text" id="nome" name="nome">
-        <button type="submit"> Enviar </button>
+        <input  type="submit" value="Enviar"> 
     </form>
 </x-layout>

@@ -23,6 +23,5 @@ Route::get('/oi', function () {
 
 Route::get('/serie', [SeriesController::class, 'index']);
 Route::get('/serie/criar', [SeriesController::class, 'create']);
-
-Route::get('/filme', [FilmesController::class, 'index']);
 Route::post("/series/salvar", [SeriesController::class, 'store']);
+

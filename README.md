@@ -738,7 +738,7 @@ arquivo create.blade.php
 </x-layout>
 ```
 
-Após essa alteração é necessario criar a rota no arquivo routers/web.php, basta adicionar a linha abaixo nesse arquivo.
+Após essa alteração é necessário criar a rota no arquivo `routers/web.php`, basta adicionar a linha abaixo nesse arquivo.
 
 ```
 Route::post("/series/salvar", [SeriesController::class, 'store']);
@@ -746,26 +746,20 @@ Route::post("/series/salvar", [SeriesController::class, 'store']);
 
 Só relembrando como a linha acima funciona, aqui indicamos primeiro o verbo post que é a forma de envio dos dados, definimos também o endereço/rota que deve ser acessado para essa ação, dentro dos [] indicamos a classe que contem a ação necessária, no caso vamos usar a classe SerieController e o método a ser acionado quando executarmos a rota será o método store que vamos criar a seguir.
 
-Na classe SerieController vamos criar o método então que faz a persistência dos dados no banco, insira nessa classe o código a seguir:
+Na classe `http/controllers/SerieController` vamos criar o método então que faz a persistência dos dados no banco, insira nessa classe o código a seguir:
 
+```
 public function store (Request $resquest)
-
 {
-
-​	$nomeSerie = $request->input("nome");
-
-​	if(DB::insert('INSERT INTO series (nome) VALUES (?)', [$nomeSerie]))
-
-​	{
-
-​		return 'ok';
-
-​	}else
-
-​	{
-
-​		return 'Deu ruim';
-
-​	}
-
+	$nomeSerie = $request->input("nome");
+	if(DB::insert('INSERT INTO series (nome) VALUES (?)', [$nomeSerie]))
+	{
+		return 'ok';
+	}
+	else
+	{
+		return 'Deu ruim';
+	}
 }
+```
+
