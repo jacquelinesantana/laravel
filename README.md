@@ -871,3 +871,4 @@ public function index(Request $request){
 
 então vimos que substituiu o all(), por query. Isso porque o método query é mais amplo e nos permite usar alguns recursos a mais como o orderBy, por exemplo, que faz a ordenação do retorno da busca ao banco por um atributo em específico, no caso o nome. O desc pode ser substituído por asc e indica se a ordem dessa ordenação será crescente ou decrescente.
 
+> OBS: Caso você precisar buscar no banco atendendo um critério Where você pode usar os modelos desse link para escrever sua consulta: https://laravel.com/docs/9.x/eloquent#building-queries
