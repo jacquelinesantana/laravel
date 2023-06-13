@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FilmesController;
 use App\Http\Controllers\SeriesController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,3 +26,6 @@ Route::get('/serie', [SeriesController::class, 'index']);
 Route::get('/serie/criar', [SeriesController::class, 'create']);
 Route::post("/serie/salvar", [SeriesController::class, 'store']);
 
+Route::get('/filmes/criar', [FilmesController::class, 'create']);
+Route::get('/filmes', [FilmesController::class, 'index']);
+Route::post("/filmes/salvar", [FilmesController::class, 'store']);

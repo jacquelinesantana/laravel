@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Filmes;
 use Illuminate\Http\Request;
 
 class FilmesController extends Controller
@@ -9,19 +10,18 @@ class FilmesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    
+    public function index()    
     {
         //
-        return "Bom dia";
+        $filmes = Filmes::query()->orderBy('nome', 'desc')->get();
+        return view('filmes.index') -> with ('filmes', $filmes);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        //
+    public function create(){
+        return view('filmes.create');
     }
 
     /**
@@ -29,7 +29,9 @@ class FilmesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Filmes::create($request->only(['nome','genero']));
+
+        return redirect('/filmes');
     }
 
     /**
